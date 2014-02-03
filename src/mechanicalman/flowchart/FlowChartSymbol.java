@@ -8,8 +8,9 @@ public class FlowChartSymbol {
 
 	/**
 	 * Represents different Commands
+	 * 
 	 * @author Francesco Macagno
-	 *
+	 * 
 	 */
 	public enum Symbol {
 		START("start"), STOP("stop"), STAND("stand"), SIT("sit"), ARMS_UP("armsUp"), ARMS_DOWN(
@@ -24,6 +25,7 @@ public class FlowChartSymbol {
 
 		/**
 		 * Gets the actuall command to be used in programs
+		 * 
 		 * @return A String representation of a command
 		 */
 		public String getCommand() {
@@ -31,12 +33,12 @@ public class FlowChartSymbol {
 		}
 	}
 
-	private ArrayList<FlowChartSymbol> from;
-	private ArrayList<FlowChartSymbol> to;
+	private final ArrayList<FlowChartSymbol> from;
+	private final ArrayList<FlowChartSymbol> to;
 	private int rowLocation;
 	private int colLocation;
 	private boolean selected;
-	private Symbol type;
+	private final Symbol type;
 
 	private static final int EMPTY = -1;
 
@@ -115,11 +117,10 @@ public class FlowChartSymbol {
 	 * symbol. Make sure the other Flow Chart symbol is not this Flow Chart
 	 * symbol. Set this Flow Chart symbol to be pointed by fromSymbol
 	 */
-	public boolean setFrom(FlowChartSymbol fromSymbol) {
+	protected boolean setFrom(FlowChartSymbol fromSymbol) {
 		// Make sure there is a from symbol and
 		// it is not itself
-		// and the from symbol points to this symbol
-		if (fromSymbol != null && fromSymbol != this && fromSymbol.getTo().contains(this)) {
+		if (fromSymbol != null && fromSymbol != this) {
 			from.add(fromSymbol);
 			Debug.println("setFrom = true");
 			return true;
@@ -140,33 +141,37 @@ public class FlowChartSymbol {
 	 * pointed to from's field to null (if there is one);
 	 */
 	public boolean setTo(FlowChartSymbol toSymbol) {
-		// System.out.println("to.size() = " + to.size()); // debug
-		// Make sure there is a symbol to point to and we don't point to
-		// ourselves
-		if (validSetTo(toSymbol)) // Currently not pointing to a symbol
-		{
-			// System.out.println("Adding a link"); // debug
-			to.add(toSymbol);
-			if (toSymbol.setFrom(this)) {
-				return true;
-			}
-			to.remove(toSymbol);
+
+		if (toSymbol == null || toSymbol == this || type.equals(Symbol.STOP))
 			return false;
-		} else if (validChangeSetTo(toSymbol)) // Currently pointing to a symbol
-												// - Change it
-		{
-			if (!type.equals(Symbol.WALL_TEST) && !type.equals(Symbol.CTR_TEST)) {
-				FlowChartSymbol currentSymbol = to.remove(0);
-				to.add(toSymbol);
-				if (toSymbol.setFrom(this)) {
+
+		if (getTo().size() > 0) {
+
+			if (type.equals(Symbol.WALL_TEST) || type.equals(Symbol.CTR_TEST)) {
+
+				for (int i = 0; i < getTo().size(); i++) {
+
+					if (getTo().get(i) == null && toSymbol.setFrom(this)) {
+						to.set(i, toSymbol);
+						return true;
+					}
+
+				}
+
+				if (getTo().size() == 1 && toSymbol.setFrom(this)) {
+					to.add(toSymbol);
 					return true;
 				}
-				to.remove(0);
-				to.add(currentSymbol);
-				return false;
-			} else // Determine the Decision pointer to change
-			{
+
 			}
+
+			return false;
+
+		}
+
+		if (toSymbol.setFrom(this)) {
+			to.add(toSymbol);
+			return true;
 		}
 		return false;
 	}
@@ -176,25 +181,12 @@ public class FlowChartSymbol {
 		return type.name();
 	}
 
-	private boolean validChangeSetTo(FlowChartSymbol toSymbol) {
-		return (toSymbol != null && // There is a toSymbol to point to
-				this != toSymbol && // Can't point to self
-		// Points to 1 or 2 symbols already
-		getTo().size() >= 1);
-	}
-
-	private boolean validSetTo(FlowChartSymbol toSymbol) {
-		return (toSymbol != null && // There is a toSymbol to point to
-				this != toSymbol && // Can't point to self
-				!type.equals(Symbol.STOP) && // Can't point out of Stop symbol
-		// Nothing currently point to or
-		// it's a decision and only 1 currently pointing to
-		(getTo().size() == 0 || (getTo().size() == 1)
-				&& (type.equals(Symbol.WALL_TEST) || type.equals(Symbol.CTR_TEST))));
-	}
-
 	public void removeTo(FlowChartSymbol to) {
-		this.to.remove(to);
+
+		int i = this.to.indexOf(to);
+
+		if (i >= 0)
+			this.to.set(i, null);
 	}
 
 	public void removeFrom(FlowChartSymbol from) {

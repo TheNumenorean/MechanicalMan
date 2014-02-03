@@ -27,25 +27,25 @@ import mechanicalman.flowchart.program.Program;
 /**
  * 
  * @author Greg Volger, Francesco Macagno
- *
+ * 
  */
 public class Main extends JFrame {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private MechanicalMan robot;
-	private BoundedGrid env;
-	private int mainWindowWidth;
-	private int mainWindowHeight;
-	private String version = "v4.0.0\nSeptember 2013\nGreg Volger\nFrancesco Macagno";
+	private final MechanicalMan robot;
+	private final BoundedGrid env;
+	private final int mainWindowWidth;
+	private final int mainWindowHeight;
+	private final String version = "v4.0.1\nSeptember 2013\nGreg Volger\nFrancesco Macagno";
 	private static int NUM_ROWS = 20;
 	private static int NUM_COLS = 20;
 	private Program program;
-	private CommandPanelController cpController;
+	private final CommandPanelController cpController;
 	private static Random generator = new Random();
 	protected FlowChart flow;
-	private CommandPanel cp;
+	private final CommandPanel cp;
 
 	public Main() {
 		// Debug.turnOn();
@@ -175,12 +175,12 @@ public class Main extends JFrame {
 						flow.setVisible(true);
 					} else
 						EventQueue.invokeLater(new Runnable() {
-						    @Override
-						    public void run() {
-						    	flow.setState(Frame.NORMAL);
-						        flow.toFront();
-						        flow.repaint();
-						    }
+							@Override
+							public void run() {
+								flow.setState(Frame.NORMAL);
+								flow.toFront();
+								flow.repaint();
+							}
 						});
 				} else {
 					flow = new FlowChart();
@@ -231,32 +231,32 @@ public class Main extends JFrame {
 
 	private void startNewLocation() {
 		Location loc = null;
-		Direction dir;
 		boolean error;
 		do {
 			error = false;
 			try {
-				String input = JOptionPane.showInputDialog("Location (x,y)");
+				String input = JOptionPane.showInputDialog("Location (row,column)");
 				if (input == null)
 					return;
 				loc = new Location(input);
+				if (!env.isValidLocation(loc))
+					throw new Exception("Invalid Location!");
 			} catch (Exception e) {
 				error = true;
+				JOptionPane.showMessageDialog(null, e.getMessage());
 			}
+
 		} while (error);
-		dir = null;
-		do {
-			error = false;
-			try {
-				String input = JOptionPane.showInputDialog("Direction facing");
-				if (input == null)
-					return;
-				dir = Direction.getDirection(Integer.parseInt(input));
-			} catch (Exception e) {
-				error = true;
-			}
-		} while (error);
-		robot.reset(loc, dir);
+
+		Object[] possibleValues = { "North", "East", "South", "West" };
+		Object selectedValue = JOptionPane.showInputDialog(null, "Choose a Direction: ",
+				"Direction:", JOptionPane.INFORMATION_MESSAGE, null, possibleValues,
+				possibleValues[0]);
+
+		if (selectedValue == null)
+			return;
+
+		robot.reset(loc, Direction.getDirection((String) selectedValue));
 	}
 
 	private void startRandomLocation() {

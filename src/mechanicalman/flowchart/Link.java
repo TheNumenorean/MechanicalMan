@@ -3,11 +3,11 @@ package mechanicalman.flowchart;
 import mechanicalman.Debug;
 
 public class Link {
-	private Coord startingPoint;
-	private Coord endingPoint;
+	private final Coord startingPoint;
+	private final Coord endingPoint;
 	private double slope;
 	private boolean undefinedSlope;
-	private FlowChartSymbol from, to;
+	private final FlowChartSymbol from, to;
 	private static final int DELTA = 5;
 
 	public Link(Coord p1, Coord p2, FlowChartSymbol from, FlowChartSymbol to) {
@@ -43,7 +43,7 @@ public class Link {
 			return false;
 		if (y > Math.max(startingPoint.getY(), endingPoint.getY()) + DELTA)
 			return false;
-		
+
 		if (!undefinedSlope) {
 			double yInt = MathFormulas
 					.yIntercept(slope, startingPoint.getX(), startingPoint.getY());
@@ -64,11 +64,13 @@ public class Link {
 		return onLine(coord.getX(), coord.getY());
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		Link temp = (Link) other;
 		return (startingPoint.equals(temp.startingPoint) && endingPoint.equals(temp.endingPoint));
 	}
 
+	@Override
 	public String toString() {
 		return "from " + from + " to " + to + " at coordinates " + startingPoint
 				+ " going to coordinate " + endingPoint;

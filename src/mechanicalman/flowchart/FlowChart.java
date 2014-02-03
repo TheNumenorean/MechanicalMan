@@ -64,10 +64,9 @@ public class FlowChart extends JFrame {
 	private JMenuItem mCtrTest;
 	private File file;
 	private Program program;
-	private FlowChartPanel fcp;
+	private final FlowChartPanel fcp;
 
-	public static final String VERSION = "3.1.1"
-			+ "\nOctober 2013\nGreg Volger\nFrancesco Macagno";
+	public static final String VERSION = "3.1.2" + "\nOctober 2013\nGreg Volger\nFrancesco Macagno";
 
 	public FlowChart() {
 		setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -75,7 +74,6 @@ public class FlowChart extends JFrame {
 		setTitle("Flow Chart Creator");
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
 
 		fcp = new FlowChartPanel(this);
@@ -84,7 +82,7 @@ public class FlowChart extends JFrame {
 		setJMenuBar(buildMenu()); // Add the menu bar
 		clear();
 		setLocation(50, 50);
-		//Debug.turnOn();
+		// Debug.turnOn();
 	}
 
 	private JMenuBar buildMenu() {
@@ -183,7 +181,8 @@ public class FlowChart extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					program = Compiler.compile(fcp.getSymbols());
-					JOptionPane.showMessageDialog(FlowChart.this, "Your program has no errors! Congratulations on your omnipotence.");
+					JOptionPane.showMessageDialog(FlowChart.this,
+							"Your program has no errors! Congratulations on your omnipotence.");
 				} catch (CompileError e1) {
 					JOptionPane.showMessageDialog(null, e1);
 				}
@@ -240,7 +239,7 @@ public class FlowChart extends JFrame {
 		mExit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+
 				FlowChart.this.dispose();
 			}
 		});
@@ -411,7 +410,8 @@ public class FlowChart extends JFrame {
 		mDirections.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				JOptionPane.showMessageDialog(FlowChart.this, DIRECTIONS, "Directions",
+						JOptionPane.PLAIN_MESSAGE);
 			}
 		});
 		helpMenu.add(mDirections);
@@ -508,14 +508,14 @@ public class FlowChart extends JFrame {
 		}
 		return false;
 	}
-	
+
 	@Override
-	public void dispose(){
-		if(!fcp.changed()){
+	public void dispose() {
+		if (!fcp.changed()) {
 			super.dispose();
 			return;
 		}
-		switch(JOptionPane.showConfirmDialog(this, "Would you like to save?")){
+		switch (JOptionPane.showConfirmDialog(this, "Would you like to save?")) {
 		case JOptionPane.YES_OPTION:
 			if (file == null)
 				showSaveDialog();
@@ -540,4 +540,5 @@ public class FlowChart extends JFrame {
 		}
 	}
 
+	public static final String DIRECTIONS = "To create a program, use the menu options to select and add the modules you want. \nThen, to connect the modules click and drag a module onto another module. This will create a link between the two. \nFor conditional modules, the first time you do the drag it will set the True option, the second time the false option. \nTo delete a link, right click it. To delete a module, right click it. \n When you are ready to run your program, save it as a .mm file and then go back to the main window. \nFrom there, do Program > Load, and use the controls in the bottom corner.\n";
 }

@@ -10,8 +10,6 @@ public enum Direction {
 	NORTH(0), SOUTH(180), EAST(90), WEST(270);
 
 	private int dir;
-	
-	
 
 	private Direction(int dir) {
 		this.dir = dir;
@@ -19,6 +17,7 @@ public enum Direction {
 
 	/**
 	 * Gets the direction of this Direction in degrees
+	 * 
 	 * @return An integer
 	 */
 	public int getDegrees() {
@@ -27,7 +26,9 @@ public enum Direction {
 
 	/**
 	 * Gets a Direction depending on a degree value
-	 * @param i Degree to interpret. Must be a cardinal direction
+	 * 
+	 * @param i
+	 *            Degree to interpret. Must be a cardinal direction
 	 * @return A Direction, or null if i is not cardinal
 	 */
 	public static Direction getDirection(int i) {
@@ -49,7 +50,9 @@ public enum Direction {
 	/**
 	 * Gets a new Direction in relation to this direction. Adds the given value
 	 * to the current degrees and reinterprets. Does NOT change this direction.
-	 * @param degrees A number between -360 and 360
+	 * 
+	 * @param degrees
+	 *            A number between -360 and 360
 	 * @return A new Direction
 	 */
 	public Direction getNewDirection(int degrees) {
@@ -57,7 +60,9 @@ public enum Direction {
 	}
 
 	/**
-	 * Gets the direction for oposite this Direction. Does NOT change this direction!
+	 * Gets the direction for oposite this Direction. Does NOT change this
+	 * direction!
+	 * 
 	 * @return A new Direction
 	 */
 	public Direction opposite() {
@@ -71,9 +76,14 @@ public enum Direction {
 
 	/**
 	 * Gets the value of this direction in radians
+	 * 
 	 * @return A radian value
 	 */
 	public double getRadians() {
 		return Math.toRadians(getDegrees());
+	}
+
+	public static Direction getDirection(String input) {
+		return Direction.valueOf(input.toUpperCase());
 	}
 }

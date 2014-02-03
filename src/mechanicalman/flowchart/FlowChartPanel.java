@@ -168,15 +168,15 @@ public class FlowChartPanel extends JPanel implements MouseListener, MouseMotion
 		return c;
 	}
 
-	private FlowChart fc;
+	private final FlowChart fc;
 
-	private FlowChartSymbol[][] symbols;
+	private final FlowChartSymbol[][] symbols;
 
 	private int numSymbols;
 
 	private FlowChartSymbol symbolToBeMoved;
 
-	private ArrayList<Link> links;
+	private final ArrayList<Link> links;
 
 	private boolean changed;
 
@@ -439,8 +439,6 @@ public class FlowChartPanel extends JPanel implements MouseListener, MouseMotion
 
 	/*************** MouseListener event handlers *******************/
 
-	// Invoked when the mouse button has been clicked (pressed and released) on
-	// a component.
 	@Override
 	public void mouseClicked(MouseEvent event) {
 		int xloc = event.getX();
@@ -483,12 +481,7 @@ public class FlowChartPanel extends JPanel implements MouseListener, MouseMotion
 				} else
 					Debug.println("Missed the link");
 			}
-			// System.out.println("Right Click - Let mouse up " + xloc + " " +
-			// yloc);
 		}
-		// int xloc = event.getX();
-		// int yloc = event.getY();
-		// System.out.println("Let mouse up " + xloc + " " + yloc);
 	}
 
 	@Override
@@ -531,8 +524,6 @@ public class FlowChartPanel extends JPanel implements MouseListener, MouseMotion
 		Debug.println("row = " + row + " col = " + col);
 	}
 
-	// handle event when mouse released after dragging
-	// Invoked when a mouse button has been released on a component.
 	@Override
 	public void mouseReleased(MouseEvent event) {
 		// Determine where to place a symbol
@@ -548,11 +539,7 @@ public class FlowChartPanel extends JPanel implements MouseListener, MouseMotion
 			symbols[row][col] = symbolToBeMoved;
 			Debug.println("Released mouse after drag " + xloc + " " + yloc);
 			Debug.println("row = " + row + " col = " + col);
-			// Edit ArrayList links to update starting & ending points - if
-			// necessary
-			// It's possible that the symbol moved did not have any link(s)
 
-			// As to
 			ArrayList<Link> tmp = new ArrayList<Link>();
 			for (Link l : links) {
 				if (l.getTo().equals(symbolToBeMoved) || l.getFrom().equals(symbolToBeMoved))
@@ -568,10 +555,9 @@ public class FlowChartPanel extends JPanel implements MouseListener, MouseMotion
 
 			repaint();
 		} else if (symbolToBeMoved != null && symbols[row][col] != null) {
-			// Place an arrow
+
 			if (symbolToBeMoved.setTo(symbols[row][col])) {
-				// Find the sarting & ending points and add them to links along
-				// with the symbol from.
+
 				ArrayList<Link> tmp = new ArrayList<Link>();
 				for (Link l : links) {
 					if (l.getFrom().equals(symbolToBeMoved) && l.getTo().equals(symbols[row][col]))
@@ -579,15 +565,15 @@ public class FlowChartPanel extends JPanel implements MouseListener, MouseMotion
 				}
 				links.removeAll(tmp);
 
-				Coord[] c = getCoord(symbols[row][col], symbolToBeMoved, 0);
+				Debug.println("Index: " + symbolToBeMoved.getTo().indexOf(symbolToBeMoved));
+				Coord[] c = getCoord(symbolToBeMoved, symbols[row][col], symbolToBeMoved.getTo()
+						.indexOf(symbols[row][col]));
 				Link link = new Link(c[0], c[1], symbolToBeMoved, symbols[row][col]);
 				links.add(link);
 				Debug.println(links.toString());
 				repaint();
 				setChanged();
 			}
-			// System.out.println("Placed arrow = " +
-			// symbolToBeMoved.setTo(symbols[row][col]));
 		} else
 			symbolToBeMoved = null;
 	}
@@ -698,19 +684,21 @@ public class FlowChartPanel extends JPanel implements MouseListener, MouseMotion
 						// Draw all arrows out of symbols[r][c];
 						ArrayList<FlowChartSymbol> drawTo = symbols[r][c].getTo();
 						for (int k = 0; k < drawTo.size(); k++) {
-							Coord coords[] = getCoord(symbols[r][c], drawTo.get(k), k);
-							int x1 = coords[0].getX();
-							int y1 = coords[0].getY();
-							int x2 = coords[1].getX();
-							int y2 = coords[1].getY();
-							// System.out.println("Draw line (" + x1
-							// +","+y1+") to ("+x2+"," +y2+")");
-							g2.setStroke(new BasicStroke(1));
-							g.drawLine(x1, y1, x2, y2);
-							int[] xp = { 0, 0, x2 };
-							int[] yp = { 0, 0, y2 };
-							createArrowPoints(x1, y1, x2, y2, xp, yp);
-							g.fillPolygon(xp, yp, 3);
+							if (drawTo.get(k) != null) {
+								Coord coords[] = getCoord(symbols[r][c], drawTo.get(k), k);
+								int x1 = coords[0].getX();
+								int y1 = coords[0].getY();
+								int x2 = coords[1].getX();
+								int y2 = coords[1].getY();
+								Debug.println("Draw line (" + x1 + "," + y1 + ") to (" + x2 + ","
+										+ y2 + ")");
+								g2.setStroke(new BasicStroke(1));
+								g.drawLine(x1, y1, x2, y2);
+								int[] xp = { 0, 0, x2 };
+								int[] yp = { 0, 0, y2 };
+								createArrowPoints(x1, y1, x2, y2, xp, yp);
+								g.fillPolygon(xp, yp, 3);
+							}
 						}
 					}
 				}
